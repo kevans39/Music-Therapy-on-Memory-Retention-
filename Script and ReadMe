@@ -1,0 +1,132 @@
+# Load necessary libraries
+library(tidyverse)    # For data manipulation and visualization
+library(afex)         # For ANOVA with mixed designs
+library(emmeans)      # For post-hoc analysis
+
+set.seed(123)
+data <- data.frame(
+  Participant = rep(1:30, each = 3),  # 30 participants measured over 3 trials
+  Group = rep(c("Therapy", "Control"), each = 15 * 3),
+  Trial = rep(1:3, times = 30),
+  RetentionScore = c(
+    rnorm(45, mean = 85, sd = 5),  # Simulated therapy group scores
+    rnorm(45, mean = 80, sd = 5)   # Simulated control group scores
+  )
+)
+
+# Check data structure
+head(data)
+
+# Convert Group and Trial to factors
+data$Group <- as.factor(data$Group)
+data$Trial <- as.factor(data$Trial)
+
+# Run the repeated measures ANOVA
+# `aov_ez` automatically takes care of repeated measures structure
+aov_result <- aov_ez(
+  id = "Participant",         # Participant ID column
+  dv = "RetentionScore",      # Dependent variable column (memory retention scores)
+  within = "Trial",           # Within-subject factor (repeated measurements)
+  between = "Group",          # Between-subject factor (Group: Therapy vs. Control)
+  data = data
+)
+
+# Display ANOVA results
+summary(aov_result)
+
+# Post-hoc tests if ANOVA is significant
+# Use emmeans package for pairwise comparisons
+posthoc_results <- emmeans(aov_result, pairwise ~ Group | Trial)
+summary(posthoc_results)
+
+# Plot results (optional)
+# A line plot showing changes in memory retention over trials
+library(ggplot2)
+ggplot(data, aes(x = Trial, y = RetentionScore, color = Group, group = Group)) +
+  stat_summary(fun = mean, geom = "line", size = 1) +
+  stat_summary(fun = mean, geom = "point", size = 3) +
+  labs(title = "Effect of Music Therapy on Memory Retention Over Trials",
+       x = "Trial",
+       y = "Memory Retention Score") +
+  theme_minimal()
+
+Contents
+
+Data Simulation: Creates a mock dataset for demonstration purposes.
+Data Preprocessing: Ensures the dataset is properly formatted for analysis.
+Repeated Measures ANOVA: Tests main effects and interactions between factors.
+Post-Hoc Tests: Provides pairwise comparisons if significant effects are found.
+Visualization: Plots the trends in memory retention over trials for each group.
+Dependencies
+
+The following R packages are required to run this script:
+
+tidyverse: For data manipulation and visualization.
+afex: For performing repeated measures ANOVA.
+emmeans: For post-hoc pairwise comparisons.
+ggplot2: For creating visualizations.
+Installing Required Packages
+Install any missing packages using:
+
+install.packages(c("tidyverse", "afex", "emmeans"))
+Steps to Run the Script
+
+Open RStudio or any R environment.
+Copy the script into an R script file (e.g., memory_analysis.R).
+Run the script line by line to:
+Simulate the dataset.
+Perform the repeated measures ANOVA.
+Conduct post-hoc tests (if applicable).
+Visualize the results.
+Key Variables
+
+Participant: Unique identifier for participants (30 individuals in this dataset).
+Group: Between-subject factor with two levels:
+Therapy (intervention group).
+Control (comparison group).
+Trial: Within-subject factor representing three repeated measures.
+RetentionScore: Simulated memory retention scores for participants.
+Statistical Analysis
+
+Repeated Measures ANOVA:
+Within-subject factor: Trial (three repeated measurements).
+Between-subject factor: Group (Therapy vs. Control).
+Conducted using the aov_ez function from the afex package.
+Post-Hoc Tests:
+Pairwise comparisons of group means across trials, using the emmeans package.
+Provides detailed comparisons with p-values.
+Visualization
+
+The script generates a line plot using ggplot2:
+
+X-axis: Trial (1, 2, 3).
+Y-axis: Mean memory retention scores.
+Color and Grouping: By intervention group (Therapy or Control).
+Example Output
+
+ANOVA Results (console output):
+Displays main effects, interaction effects, and their significance.
+Post-Hoc Results (console output):
+Shows pairwise comparisons for group differences across trials.
+Plot:
+A clear visualization of memory retention trends across trials for both groups.
+Customization
+
+Replace the simulated dataset with your actual dataset.
+Modify the factors (Group, Trial) to match your data structure.
+Update plot labels, titles, or themes as needed.
+Contact
+
+For questions or further assistance, feel free to reach out:
+
+Name: [Kadence Evans]
+
+
+
+
+
+
+
+
+
+
